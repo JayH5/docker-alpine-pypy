@@ -2,7 +2,7 @@ FROM jamiehewland/alpine-buildpack-deps
 MAINTAINER Jamie Hewland <jhewland@gmail.com>
 
 # Remove existing Alpine Python
-RUN apk del python
+RUN apk del -r python
 
 # http://bugs.python.org/issue19846
 # > At the moment, setting "LANG=C" on a Linux system *fundamentally breaks Python 3*, and that's not OK.
