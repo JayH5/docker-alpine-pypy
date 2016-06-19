@@ -1,0 +1,24 @@
+sudo: required
+language: bash
+services:
+  - docker
+
+env:
+  - VERSION=2 VARIANT=
+  - VERSION=2 VARIANT=slim
+
+before_install:
+  - sudo apt-get update
+  - sudo apt-get install -o Dpkg::Options::="--force-confold" -y docker-engine
+
+before_script:
+  - cd "$VERSION"
+  - image="$(awk '$1 == "FROM" { print $2; exit }' onbuild/Dockerfile)${VARIANT:+-$VARIANT}"
+
+script:
+  - docker build -t "$image" "${VARIANT:-.}"
+  # the "onbuild" variant has to happen with the base variant because it's FROM it
+  - if [[ -z "$VARIANT" ]]; then docker build -t "${image}-onbuild" onbuild; fi
+
+after_script:
+  - docker images
