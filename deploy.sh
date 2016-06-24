@@ -34,7 +34,6 @@ function deploy {
 }
 
 # Login to Docker Hub
-echo "Logging in to Docker Hub with username '$REGISTRY_USER' and password '$REGISTRY_PASS'"
 docker login -u "$REGISTRY_USER" -p "$REGISTRY_PASS"
 
 # Deploy the image
