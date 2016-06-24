@@ -1,9 +1,13 @@
 sudo: required
-language: bash
+language: python
 services:
   - docker
 
 env:
+  matrix:
+    global:
+      - REGISTRY_USER=jamiehewland
+      - secure: "Jf8XdgVwohY2K2Ga1EuO+8swpHwVnIgpW2dX6TK+6mmxLoBsk7TeK43hdoLUFqxQO0FBOrARQDkaFYKnqOnHns0QmhHbXbH5qObMn61khArdk3pPAlbmXmEW3ZWM1X2HunPJ+G0jnG0tjDFRlih3x/S475PPB874K3P9ZRY5VDzqnRsTaqCVs+Izxh3XAfGu/tS+u+JYY0JM2PDxXDN12a9tGxvKcDc4yzcIqvOtjTg9NV4PmKARb1M1CNa8f3PzKtADnkUbIXWenyEIZb7tdjngJUsQuad2AF5Z/sIqS/fTsCwG4laF2xhQtAaa86yFzXsRTdOCErL9MucoeDe9z8x1eldS7kGvEVee14hzc2/S2qs9O/vcdfNAikBjeZY5Ofzl5M2mU3VpQTFFHgsGkuJ8IANnAFZsJ5YATYoKLZyz6kyGA6soIu+yaJQZXD346P91F8k/jw6KV8wAwMBJVrDt/NRiNhbFLqybEYiouVR9GBnRyt/FTntpo+zYRG+xGCA+pvfcLuRV1ARxc4LNnmKljHg1YtlynmdCw1cV3rvKWcaP7UMKzyeIkh9gh0i868pC844GDLeayBl4euDBk7CeByzBUkHH5qQ7g9gsPG/QhcD5lqdgVK0RTPHn+gvPyGOc/KyXFjB4KvFuJ3praSzIk6+bZL7Wt6uZWwlyRdg="
   - VERSION=2 VARIANT=
   - VERSION=2 VARIANT=slim
 
@@ -11,14 +15,14 @@ before_install:
   - sudo apt-get update
   - sudo apt-get install -o Dpkg::Options::="--force-confold" -y docker-engine
 
-before_script:
-  - cd "$VERSION"
-  - image="$(awk '$1 == "FROM" { print $2; exit }' onbuild/Dockerfile)${VARIANT:+-$VARIANT}"
-
 script:
-  - docker build -t "$image" "${VARIANT:-.}"
-  # the "onbuild" variant has to happen with the base variant because it's FROM it
-  - if [[ -z "$VARIANT" ]]; then docker build -t "${image}-onbuild" onbuild; fi
+  - ./build.sh
 
 after_script:
   - docker images
+
+before_deploy:
+  - pip install docker-ci-deploy
+deploy:
+  provider: script
+  script: ./deploy.sh
