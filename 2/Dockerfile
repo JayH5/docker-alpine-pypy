@@ -1,4 +1,4 @@
-FROM jamiehewland/alpine-buildpack-deps
+FROM praekeltfoundation/alpine-buildpack-deps
 MAINTAINER Jamie Hewland <jhewland@gmail.com>
 
 # Remove existing Alpine Python
