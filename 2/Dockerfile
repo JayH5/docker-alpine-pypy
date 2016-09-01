@@ -8,8 +8,8 @@ RUN apk del -r python
 # > At the moment, setting "LANG=C" on a Linux system *fundamentally breaks Python 3*, and that's not OK.
 ENV LANG C.UTF-8
 
-ENV PYPY_VERSION="5.3.1" \
-    PYPY_SHA256="5e1b069c68d79150c462a1bba153ad622a238611934a58ac74f2b52c77962e01"
+ENV PYPY_VERSION="5.4.0" \
+    PYPY_SHA256="49a06889f1b7fbb946472aea565d6830399eadbf9ff3de6552d3dcc989c97ceb"
 
 RUN set -x \
     && PYPY_FILE="pypy2-v${PYPY_VERSION}-linux64" \
