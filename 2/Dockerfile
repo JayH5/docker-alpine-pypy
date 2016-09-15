@@ -15,6 +15,8 @@ ENV PYPY_SHA256="ccd2162919373b8b1a74963b6c92902ac8203190de10df894c7d5fc4eb96391
 ENV PYTHON_PIP_VERSION 8.1.2
 
 RUN set -ex \
+    && apk add --no-cache --virtual .fetch-deps tar \
+    \
     && wget -O pypy.tar.bz2 "https://github.com/JayH5/alpine-pypy/releases/download/2-$PYPY_VERSION/pypy2-v${PYPY_VERSION}-linux64.tar.bz2" \
     && echo "$PYPY_SHA256  pypy.tar.bz2" | sha256sum -c - \
     && tar -xjC /usr/local --strip-components=1 -f pypy.tar.bz2 \
@@ -39,6 +41,7 @@ RUN set -ex \
 # https://github.com/docker-library/python/pull/100
     && [ "$(pip list |tac|tac| awk -F '[ ()]+' '$1 == "pip" { print $2; exit }')" = "$PYTHON_PIP_VERSION" ] \
     \
+    && apk del .fetch-deps \
     && rm -rf ~/.cache
 
 RUN curl -SL 'https://bootstrap.pypa.io/get-pip.py' | pypy \
