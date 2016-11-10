@@ -21,13 +21,16 @@ install:
 before_script:
   - image="$(awk '$1 == "FROM" { print $2; exit }' $VERSION/onbuild/Dockerfile)${VARIANT:+-$VARIANT}"
   - version="$(awk '$2 == "PYPY_VERSION" { print $3; exit }' $VERSION/Dockerfile)"
-  - echo "Building image $image with PyPy version $version"
+  - echo "Building image $image with PyPy $VERSION version $version"
 
 script:
-  - docker build -t "$image" "$VERSION"
+  - docker build -t "$image" "$VERSION${VARIANT:+/$VARIANT}"
   # Run the "official-images" tests, but first tag our image like the official
   # ones to get the same tests
-  - docker tag "$image" "pypy:$VERSION" && ~/official-images/test/run.sh "pypy:$VERSION"
+  - |
+    official_image="pypy:$VERSION${VARIANT:+-$VARIANT}"
+    docker tag "$image" "$official_image"
+    ~/official-images/test/run.sh "$official_image"
   # the "onbuild" variant has to happen with the base variant because it's FROM it
   - if [ -z "$VARIANT" ]; then docker build -t "${image}-onbuild" "$VERSION/onbuild"; fi
 
