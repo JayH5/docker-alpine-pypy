@@ -8,11 +8,11 @@ ENV PATH /usr/local/bin:$PATH
 # > At the moment, setting "LANG=C" on a Linux system *fundamentally breaks Python 3*, and that's not OK.
 ENV LANG C.UTF-8
 
-ENV PYPY_VERSION="5.4.1"
-ENV PYPY_SHA256="ccd2162919373b8b1a74963b6c92902ac8203190de10df894c7d5fc4eb96391b"
+ENV PYPY_VERSION 5.4.1
+ENV PYPY_SHA256 ccd2162919373b8b1a74963b6c92902ac8203190de10df894c7d5fc4eb96391b
 
 # if this is called "PIP_VERSION", pip explodes with "ValueError: invalid truth value '<VERSION>'"
-ENV PYTHON_PIP_VERSION 8.1.2
+ENV PYTHON_PIP_VERSION 9.0.1
 
 RUN set -ex \
     && apk add --no-cache --virtual .fetch-deps tar \
@@ -30,9 +30,9 @@ RUN set -ex \
     )" \
     && apk add --no-cache --virtual .pypy-rundeps $runDeps \
     \
-    && wget -O /tmp/get-pip.py 'https://bootstrap.pypa.io/get-pip.py' \
-    && pypy /tmp/get-pip.py "pip==$PYTHON_PIP_VERSION" \
-    && rm /tmp/get-pip.py \
+        && wget -O /tmp/get-pip.py 'https://bootstrap.pypa.io/get-pip.py' \
+        && pypy /tmp/get-pip.py "pip==$PYTHON_PIP_VERSION" \
+        && rm /tmp/get-pip.py \
 # we use "--force-reinstall" for the case where the version of pip we're trying to install is the same as the version bundled with Python
 # ("Requirement already up-to-date: pip==8.1.2 in /usr/local/lib/python3.6/site-packages")
 # https://github.com/docker-library/python/pull/143#issuecomment-241032683
@@ -43,8 +43,5 @@ RUN set -ex \
     \
     && apk del .fetch-deps \
     && rm -rf ~/.cache
-
-RUN curl -SL 'https://bootstrap.pypa.io/get-pip.py' | pypy \
-    && pip install --upgrade pip==$PYTHON_PIP_VERSION
 
 CMD ["pypy"]
