@@ -15,16 +15,26 @@ before_install:
   - sudo apt-get update
   - sudo apt-get install -o Dpkg::Options::="--force-confold" -y docker-engine
 
+before_script:
+  - image="$(awk '$1 == "FROM" { print $2; exit }' $VERSION/onbuild/Dockerfile)${VARIANT:+-$VARIANT}"
+  - version="$(awk '$2 == "PYPY_VERSION" { print $3; exit }' $VERSION/Dockerfile)"
+  - echo "Building image $image with PyPy version $version"
+
 script:
-  - ./build.sh
+  - docker build -t "$image" "$VERSION"
+  # Run the "official-images" tests, but first tag our image like the official
+  # ones to get the same tests
+  - docker tag "$image" "pypy:$VERSION" && ~/official-images/test/run.sh "pypy:$VERSION"
+  # the "onbuild" variant has to happen with the base variant because it's FROM it
+  - if [ -z "$VARIANT" ]; then docker build -t "${image}-onbuild" "$VERSION/onbuild"; fi
 
 after_script:
   - docker images
 
 before_deploy:
-  - pip install docker-ci-deploy
+  - docker login -u "$REGISTRY_USER" -p "$REGISTRY_PASS"
 deploy:
   provider: script
-  script: ./deploy.sh
+  script: ./deploy.py "$image" "$version" && if [ -z "$VARIANT" ]; then ./deploy.py "${image}-onbuild" "$version"
   on:
     branch: develop
