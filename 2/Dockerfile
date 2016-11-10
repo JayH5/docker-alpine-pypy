@@ -30,9 +30,9 @@ RUN set -ex \
     )" \
     && apk add --no-cache --virtual .pypy-rundeps $runDeps \
     \
-    && wget -O /tmp/get-pip.py 'https://bootstrap.pypa.io/get-pip.py' \
-    && pypy /tmp/get-pip.py "pip==$PYTHON_PIP_VERSION" \
-    && rm /tmp/get-pip.py \
+        && wget -O /tmp/get-pip.py 'https://bootstrap.pypa.io/get-pip.py' \
+        && pypy /tmp/get-pip.py "pip==$PYTHON_PIP_VERSION" \
+        && rm /tmp/get-pip.py \
 # we use "--force-reinstall" for the case where the version of pip we're trying to install is the same as the version bundled with Python
 # ("Requirement already up-to-date: pip==8.1.2 in /usr/local/lib/python3.6/site-packages")
 # https://github.com/docker-library/python/pull/143#issuecomment-241032683
@@ -43,8 +43,5 @@ RUN set -ex \
     \
     && apk del .fetch-deps \
     && rm -rf ~/.cache
-
-RUN curl -SL 'https://bootstrap.pypa.io/get-pip.py' | pypy \
-    && pip install --upgrade pip==$PYTHON_PIP_VERSION
 
 CMD ["pypy"]
