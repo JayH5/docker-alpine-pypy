@@ -54,4 +54,4 @@ RUN set -ex \
     && apk del .fetch-deps \
     && rm -rf ~/.cache
 
-CMD ["pypy"]
+CMD ["pypy3"]
