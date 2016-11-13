@@ -47,9 +47,4 @@ RUN set -ex \
     && apk del .fetch-deps \
     && rm -rf ~/.cache
 
-# FIXME: if libdb is present (which it is in the bigger image), PyPy3 tries to
-# import dbm.ndbm when any dbm module is imported. Alpine's libdb is not built
-# with gdb support and so doesn't have the symbols necessary for dbm.ndbm.
-RUN rm /usr/local/lib-python/3/dbm/ndbm.py
-
 CMD ["pypy"]
