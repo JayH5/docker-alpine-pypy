@@ -9,7 +9,7 @@ ENV PATH /usr/local/bin:$PATH
 ENV LANG C.UTF-8
 
 ENV PYPY_VERSION 5.5.0-alpha
-ENV PYPY_SHA256 deea62518c6a0b3825dd8e532603fc6505ed087a4782532f0dde989b1e9f67f0
+ENV PYPY_SHA256 ac7e21c677fb933154738937bb6238f48a42c0c43a5a6f7165b2fe9a92f29bd6
 
 # if this is called "PIP_VERSION", pip explodes with "ValueError: invalid truth value '<VERSION>'"
 ENV PYTHON_PIP_VERSION 9.0.1
