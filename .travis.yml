@@ -24,9 +24,11 @@ before_script:
   - image="$(awk '$1 == "FROM" { print $2; exit }' $VERSION/onbuild/Dockerfile)${VARIANT:+-$VARIANT}"
   - version="$VERSION-$(awk '$2 == "PYPY_VERSION" { print $3; exit }' $VERSION/Dockerfile)"
   - echo "Building image $image with PyPy version $version"
+  - docker pull "$image" || true
+  - if [ -z "$VARIANT" ]; then docker pull "${image}-onbuild"; fi
 
 script:
-  - docker build -t "$image" "$VERSION${VARIANT:+/$VARIANT}"
+  - docker build --pull --cache-from "$image" -t "$image" "$VERSION${VARIANT:+/$VARIANT}"
   # Run the "official-images" tests, but first tag our image like the official
   # ones to get the same tests
   - |
@@ -34,7 +36,7 @@ script:
     docker tag "$image" "$official_image"
     ~/official-images/test/run.sh "$official_image"
   # the "onbuild" variant has to happen with the base variant because it's FROM it
-  - if [ -z "$VARIANT" ]; then docker build -t "${image}-onbuild" "$VERSION/onbuild"; fi
+  - if [ -z "$VARIANT" ]; then docker build --cache-from "${image}-onbuild" -t "${image}-onbuild" "$VERSION/onbuild"; fi
 
 after_script:
   - docker images
