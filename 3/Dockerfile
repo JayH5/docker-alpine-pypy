@@ -8,8 +8,8 @@ ENV PATH /usr/local/bin:$PATH
 # > At the moment, setting "LANG=C" on a Linux system *fundamentally breaks Python 3*, and that's not OK.
 ENV LANG C.UTF-8
 
-ENV PYPY_VERSION 5.5.0-alpha
-ENV PYPY_SHA256 ac7e21c677fb933154738937bb6238f48a42c0c43a5a6f7165b2fe9a92f29bd6
+ENV PYPY_VERSION 5.7.0
+ENV PYPY_SHA256 3fdd7f9d60af6d7d8412a7c6eb2e13dcecc555cf48e297c42515fdfa3521646c
 
 # if this is called "PIP_VERSION", pip explodes with "ValueError: invalid truth value '<VERSION>'"
 ENV PYTHON_PIP_VERSION 9.0.1
@@ -17,7 +17,7 @@ ENV PYTHON_PIP_VERSION 9.0.1
 RUN set -ex \
     && apk add --no-cache --virtual .fetch-deps tar \
     \
-    && wget -O pypy.tar.bz2 "https://github.com/JayH5/alpine-pypy/releases/download/3.3-$PYPY_VERSION/pypy3.3-v${PYPY_VERSION}-linux64.tar.bz2" \
+    && wget -O pypy.tar.bz2 "https://github.com/JayH5/alpine-pypy/releases/download/3-$PYPY_VERSION/pypy3-v${PYPY_VERSION}-linux64.tar.bz2" \
     && echo "$PYPY_SHA256  pypy.tar.bz2" | sha256sum -c - \
     && tar -xjC /usr/local --strip-components=1 -f pypy.tar.bz2 \
     && rm pypy.tar.bz2 \
