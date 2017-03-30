@@ -26,7 +26,7 @@ RUN set -ex \
         scanelf --needed --nobanner --recursive /usr/local \
             | awk '{ gsub(/,/, "\nso:", $2); print "so:" $2 }' \
             | sort -u \
-            | grep -v 'libpypy-c' \
+            | grep -v 'libpypy3-c' \
     )" \
     && apk add --no-cache --virtual .pypy-rundeps $runDeps \
     \
