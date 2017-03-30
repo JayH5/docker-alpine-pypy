@@ -1,5 +1,5 @@
 FROM alpine:3.4
-MAINTAINER Jamie Hewland <jhewland@gmail.com>
+LABEL maintainer "Jamie Hewland <jhewland@gmail.com>"
 
 # ensure local pypy is preferred over distribution python
 ENV PATH /usr/local/bin:$PATH
