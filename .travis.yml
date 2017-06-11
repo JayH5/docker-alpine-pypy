@@ -21,32 +21,33 @@ install:
   - git clone https://github.com/docker-library/official-images.git ~/official-images
 
 before_script:
-  - image="$(awk '$1 == "FROM" { print $2; exit }' $VERSION/onbuild/Dockerfile)${VARIANT:+-$VARIANT}"
-  - version="$VERSION-$(awk '$2 == "PYPY_VERSION" { print $3; exit }' $VERSION/Dockerfile)"
+  - cd "$VERSION"
+  - image="$(awk '$1 == "FROM" { print $2; exit }' onbuild/Dockerfile)${VARIANT:+-$VARIANT}"
+  - version="$VERSION-$(awk '$2 == "PYPY_VERSION" { print $3; exit }' Dockerfile)"
   # the "onbuild" variant has to happen with the base variant because it's FROM it
   - if [ -z "$VARIANT" ]; then image_onbuild="${image}-onbuild"; else image_onbuild= ; fi
   - echo "Building image $image with PyPy version $version"
   - docker pull "$image" || true
-  - if [ -n "$image_onbuild" ]; then docker pull "$image_onbuild"; fi
+  - if [ -n "$image_onbuild" ]; then docker pull "$image_onbuild" || true; fi
 
 script:
-  - docker build --pull --cache-from "$image" -t "$image" "$VERSION${VARIANT:+/$VARIANT}"
+  - docker build --pull --cache-from "$image" -t "$image" "${VARIANT:-.}"
   # Run the "official-images" tests, but first tag our image like the official
   # ones to get the same tests
   - |
     official_image="pypy:$VERSION${VARIANT:+-$VARIANT}"
     docker tag "$image" "$official_image"
     ~/official-images/test/run.sh "$official_image"
-  - if [ -n "$image_onbuild" ]; then docker build --cache-from "$image_onbuild" -t "$image_onbuild" "$VERSION/onbuild"; fi
+  - if [ -n "$image_onbuild" ]; then docker build --cache-from "$image_onbuild" -t "$image_onbuild" onbuild; fi
 
 after_script:
   - docker images
 
 before_deploy:
-  - pip install docker-ci-deploy
+  - pip install docker-ci-deploy==0.3.0
   - docker login -u "$REGISTRY_USER" -p "$REGISTRY_PASS"
 deploy:
   provider: script
-  script: dcd --tag-version "$version" --tag-semver ${TAG_LATEST:+--tag-latest} "$image" $image_onbuild
+  script: dcd --version "$version" --version-semver ${TAG_LATEST:+--version-latest} "$image" $image_onbuild
   on:
     branch: develop
