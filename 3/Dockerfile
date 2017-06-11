@@ -1,4 +1,4 @@
-FROM praekeltfoundation/alpine-buildpack-deps
+FROM praekeltfoundation/alpine-buildpack-deps:3.4
 LABEL maintainer "Jamie Hewland <jhewland@gmail.com>"
 
 # ensure local pypy is preferred over distribution python
@@ -9,42 +9,40 @@ ENV PATH /usr/local/bin:$PATH
 ENV LANG C.UTF-8
 
 ENV PYPY_VERSION 5.7.1
-ENV PYPY_SHA256 d1274438229188693b2046b1b81682d6723c1823d28164dcb616300978cc7f00
+ENV PYPY_SHA256SUM d1274438229188693b2046b1b81682d6723c1823d28164dcb616300978cc7f00
 
 # if this is called "PIP_VERSION", pip explodes with "ValueError: invalid truth value '<VERSION>'"
 ENV PYTHON_PIP_VERSION 9.0.1
 
-RUN set -ex \
-    && apk add --no-cache --virtual .fetch-deps tar \
+RUN set -ex; \
+    apk add --no-cache --virtual .fetch-deps tar; \
     \
-    && wget -O pypy.tar.bz2 "https://github.com/JayH5/alpine-pypy/releases/download/3-$PYPY_VERSION/pypy3-v${PYPY_VERSION}-linux64.tar.bz2" \
-    && echo "$PYPY_SHA256  pypy.tar.bz2" | sha256sum -c - \
-    && tar -xjC /usr/local --strip-components=1 -f pypy.tar.bz2 \
-    && rm pypy.tar.bz2 \
+    wget -O pypy.tar.bz2 "https://github.com/JayH5/alpine-pypy/releases/download/3-$PYPY_VERSION/pypy3-v${PYPY_VERSION}-linux64.tar.bz2"; \
+    echo "$PYPY_SHA256SUM *pypy.tar.bz2" | sha256sum -c -; \
+    tar -xjC /usr/local --strip-components=1 -f pypy.tar.bz2; \
+    rm pypy.tar.bz2; \
     \
-    && runDeps="$( \
+    runDeps="$( \
         scanelf --needed --nobanner --recursive /usr/local \
             | awk '{ gsub(/,/, "\nso:", $2); print "so:" $2 }' \
             | sort -u \
             | grep -v 'libpypy3-c' \
-    )" \
-    && apk add --no-cache --virtual .pypy-rundeps $runDeps \
+    )"; \
+    apk add --no-cache --virtual .pypy-rundeps $runDeps; \
     \
-# explicit path to "pip3" to ensure distribution-provided "pip3" cannot interfere
-    && if [ ! -e /usr/local/bin/pip3 ]; then : \
-        && wget -O /tmp/get-pip.py 'https://bootstrap.pypa.io/get-pip.py' \
-        && pypy3 /tmp/get-pip.py "pip==$PYTHON_PIP_VERSION" \
-        && rm /tmp/get-pip.py \
-    ; fi \
-# we use "--force-reinstall" for the case where the version of pip we're trying to install is the same as the version bundled with Python
-# ("Requirement already up-to-date: pip==8.1.2 in /usr/local/lib/python3.6/site-packages")
-# https://github.com/docker-library/python/pull/143#issuecomment-241032683
-    && pip3 install --no-cache-dir --upgrade --force-reinstall "pip==$PYTHON_PIP_VERSION" \
-# then we use "pip list" to ensure we don't have more than one pip version installed
-# https://github.com/docker-library/python/pull/100
-    && [ "$(pip list |tac|tac| awk -F '[ ()]+' '$1 == "pip" { print $2; exit }')" = "$PYTHON_PIP_VERSION" ] \
+    apk del .fetch-deps
+
+RUN set -ex; \
     \
-    && apk del .fetch-deps \
-    && rm -rf ~/.cache
+    wget -O get-pip.py 'https://bootstrap.pypa.io/get-pip.py'; \
+    \
+    pypy3 get-pip.py \
+        --disable-pip-version-check \
+        --no-cache-dir \
+        "pip==$PYTHON_PIP_VERSION" \
+    ; \
+    pip --version; \
+    \
+    rm -f get-pip.py
 
 CMD ["pypy3"]
