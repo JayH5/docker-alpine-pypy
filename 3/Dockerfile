@@ -1,4 +1,4 @@
-FROM praekeltfoundation/alpine-buildpack-deps
+FROM praekeltfoundation/alpine-buildpack-deps:3.4
 LABEL maintainer "Jamie Hewland <jhewland@gmail.com>"
 
 # ensure local pypy is preferred over distribution python
