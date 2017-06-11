@@ -17,7 +17,7 @@ ENV PYTHON_PIP_VERSION 9.0.1
 RUN set -ex; \
     apk add --no-cache --virtual .fetch-deps tar; \
     \
-    wget -O pypy.tar.bz2 "https://bitbucket.org/pypy/pypy/downloads/pypy2-v${PYPY_VERSION}-linux64.tar.bz2"; \
+    wget -O pypy.tar.bz2 "https://github.com/JayH5/alpine-pypy/releases/download/2-$PYPY_VERSION/pypy2-v${PYPY_VERSION}-linux64.tar.bz2"; \
     echo "$PYPY_SHA256SUM *pypy.tar.bz2" | sha256sum -c; \
     tar -xjC /usr/local --strip-components=1 -f pypy.tar.bz2; \
     rm pypy.tar.bz2; \
