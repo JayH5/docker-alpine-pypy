@@ -1,6 +1,6 @@
 # docker-alpine-pypy
 
-[![Build Status](https://img.shields.io/travis/JayH5/docker-alpine-pypy/develop.svg)](https://travis-ci.org/JayH5/docker-alpine-pypy)
+[![Build Status](https://img.shields.io/travis/JayH5/docker-alpine-pypy/master.svg)](https://travis-ci.org/JayH5/docker-alpine-pypy)
 
 Docker images for [PyPy](http://pypy.org) running on [Alpine Linux](http://www.alpinelinux.org).
 

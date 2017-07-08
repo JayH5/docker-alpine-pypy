@@ -15,8 +15,6 @@ ENV PYPY_SHA256SUM 127e131dcb8ec82d3c45f8ae933b07390fe3188ebdf659bac869bbf9a956f
 ENV PYTHON_PIP_VERSION 9.0.1
 
 RUN set -ex; \
-    apk add --no-cache --virtual .fetch-deps tar; \
-    \
     wget -O pypy.tar.bz2 "https://github.com/JayH5/alpine-pypy/releases/download/2-$PYPY_VERSION/pypy2-v${PYPY_VERSION}-linux64.tar.bz2"; \
     echo "$PYPY_SHA256SUM *pypy.tar.bz2" | sha256sum -c; \
     tar -xjC /usr/local --strip-components=1 -f pypy.tar.bz2; \
@@ -28,9 +26,7 @@ RUN set -ex; \
             | sort -u \
             | grep -v 'libpypy-c' \
     )"; \
-    apk add --no-cache --virtual .pypy-rundeps $runDeps; \
-    \
-    apk del .fetch-deps
+    apk add --no-cache --virtual .pypy-rundeps $runDeps
 
 RUN set -ex; \
     \
