@@ -50,4 +50,4 @@ deploy:
   provider: script
   script: dcd --version "$version" --version-semver ${TAG_LATEST:+--version-latest} "$image" $image_onbuild
   on:
-    branch: develop
+    branch: master
