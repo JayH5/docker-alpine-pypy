@@ -13,10 +13,6 @@ env:
     - VERSION=3 VARIANT=     TAG_LATEST=1
     - VERSION=3 VARIANT=slim TAG_LATEST=1
 
-before_install:
-  - sudo apt-get update
-  - sudo apt-get install -o Dpkg::Options::="--force-confold" -y docker-engine
-
 install:
   - git clone https://github.com/docker-library/official-images.git ~/official-images
 
