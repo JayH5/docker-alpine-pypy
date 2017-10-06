@@ -1,4 +1,4 @@
-FROM praekeltfoundation/alpine-buildpack-deps:3.4
+FROM praekeltfoundation/alpine-buildpack-deps:3.6
 LABEL maintainer "Jamie Hewland <jhewland@gmail.com>"
 
 # ensure local pypy is preferred over distribution python
@@ -8,8 +8,8 @@ ENV PATH /usr/local/bin:$PATH
 # > At the moment, setting "LANG=C" on a Linux system *fundamentally breaks Python 3*, and that's not OK.
 ENV LANG C.UTF-8
 
-ENV PYPY_VERSION 5.8.0
-ENV PYPY_SHA256SUM 127e131dcb8ec82d3c45f8ae933b07390fe3188ebdf659bac869bbf9a956fb4a
+ENV PYPY_VERSION 5.9.0
+ENV PYPY_SHA256SUM a667f8aad914e82e35fd8a505490fe424ec8defeec7c23cf09c047b8fa3097f3
 
 # if this is called "PIP_VERSION", pip explodes with "ValueError: invalid truth value '<VERSION>'"
 ENV PYTHON_PIP_VERSION 9.0.1
