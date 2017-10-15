@@ -20,7 +20,7 @@ ENV PYTHON_PIP_VERSION 9.0.1
 
 RUN set -ex; \
     apk add --no-cache --virtual .fetch-deps \
-        openssl \
+        libressl \
         tar \
         xz \
     ; \
