@@ -1,4 +1,4 @@
-FROM praekeltfoundation/alpine-buildpack-deps:3.4
+FROM praekeltfoundation/alpine-buildpack-deps:3.6
 LABEL maintainer "Jamie Hewland <jhewland@gmail.com>"
 
 # ensure local pypy is preferred over distribution python
@@ -9,7 +9,7 @@ ENV PATH /usr/local/bin:$PATH
 ENV LANG C.UTF-8
 
 ENV PYPY_VERSION 5.8.0
-ENV PYPY_SHA256SUM 7e41554cd0fbf7d569bbc5a42abc29814ad504f4a53ab536bd0de98b400fb8cb
+ENV PYPY_SHA256SUM a85abaaa01f8db9210e7526ed36350c3269d008b7626c1202efd86b3c426f1ef
 
 # if this is called "PIP_VERSION", pip explodes with "ValueError: invalid truth value '<VERSION>'"
 ENV PYTHON_PIP_VERSION 9.0.1
