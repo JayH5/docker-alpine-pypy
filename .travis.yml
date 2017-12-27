@@ -1,7 +1,7 @@
 sudo: required
+group: trusty_latest
 language: python
-services:
-  - docker
+services: docker
 
 branches:
   only:
@@ -9,36 +9,31 @@ branches:
 
 env:
   global:
+    - IMAGE_NAME=jamiehewland/alpine-pypy
     - REGISTRY_USER=jamiehewland
     - secure: "4qDsmFNSiMYOmAsDugOEsTxOJIszKtMUqiymNWsWyNq1MYDRsRzILtfAAxHo1V6Bva2JfCKwQu6PRu53kW6SvgIZhtcVD33qx/fhGGXa4izZO3E2znSLJ2x15iO8Py/4OHkMWEG+y/HLh4sDWhEQEM25mGrcYywc0iBIWnmezQ2yOH2ow3MlMTQ+Eu3vDWmD4CyDJU/fmAx9rU38xzYK1mksiSgjPC0xsM3ZLsbIiEXXhTZzgwJvrBfVaEMosO2ZI3dYeVEe0v0eaMPT9Sh2prQqsNUJrIWQQpzLQB4g/ORUddj96LbJ0lplsJgJ9f86xN0F4wEoc0aEea8tSMjXEnxatQi4nwXRXm0HbC2K4/rMqqTbn5PBi3pMtS4k02lxvysJyaaaMc0cjE4ZiQsSPlYEmxet1gaJbM+PGDCvvTfuPaDTwbWWZLslHkxdriAZhI5pKl2++hjm1/HP88cY1YWOIBW7fW+wawyApATfznPKVzdoyLapHc+hLsVVU/rB8QHTWMEjpLAGVjZpHwYYyidZngbIAnzRxBt0LyJJnHSO5jGgIrtkgJbtwdCgNVaAGCcZ9a+bwQWNuSxPC2d4tLufpqbMEXMujKG3YPyrQ6/80MRqdKa1TBZwwnsOWfjSwZe+7i9wxBz1gR6KegLMOCuMAslcCxA+BoaezH2cbPY="
   matrix:
-    - VERSION=2 VARIANT=     TAG_LATEST=
-    - VERSION=2 VARIANT=slim TAG_LATEST=
-    - VERSION=3 VARIANT=     TAG_LATEST=1
-    - VERSION=3 VARIANT=slim TAG_LATEST=1
+    - VERSION=2/alpine3.6 TAG_LATEST=
+    - VERSION=3/alpine3.6 TAG_LATEST=1
 
 install:
   - git clone https://github.com/docker-library/official-images.git ~/official-images
 
 before_script:
   - cd "$VERSION"
-  - image="$(awk '$1 == "FROM" { print $2; exit }' onbuild/Dockerfile)${VARIANT:+-$VARIANT}"
-  - version="$VERSION-$(awk '$2 == "PYPY_VERSION" { print $3; exit }' Dockerfile)"
-  # the "onbuild" variant has to happen with the base variant because it's FROM it
-  - if [ -z "$VARIANT" ]; then image_onbuild="${image}-onbuild"; else image_onbuild= ; fi
+  - image="$IMAGE_NAME:${VERSION%/*}-${VERSION#*/}"
+  - version="${VERSION%/*}-$(awk '$2 == "PYPY_VERSION" { print $3; exit }' Dockerfile)"
   - echo "Building image $image with PyPy version $version"
   - docker pull "$image" || true
-  - if [ -n "$image_onbuild" ]; then docker pull "$image_onbuild" || true; fi
 
 script:
-  - docker build --pull --cache-from "$image" -t "$image" "${VARIANT:-.}"
+  - docker build --pull --cache-from "$image" -t "$image" .
   # Run the "official-images" tests, but first tag our image like the official
   # ones to get the same tests
   - |
     official_image="pypy:$VERSION${VARIANT:+-$VARIANT}"
     docker tag "$image" "$official_image"
     ~/official-images/test/run.sh "$official_image"
-  - if [ -n "$image_onbuild" ]; then docker build --cache-from "$image_onbuild" -t "$image_onbuild" onbuild; fi
 
 after_script:
   - docker images
@@ -48,6 +43,6 @@ before_deploy:
   - docker login -u "$REGISTRY_USER" -p "$REGISTRY_PASS"
 deploy:
   provider: script
-  script: dcd --version "$version" --version-semver ${TAG_LATEST:+--version-latest} "$image" $image_onbuild
+  script: dcd --version "$version" --version-semver ${TAG_LATEST:+--version-latest} "$image"
   on:
     branch: master
