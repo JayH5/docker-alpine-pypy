@@ -13,7 +13,7 @@ ENV LANG C.UTF-8
 RUN apk add --no-cache ca-certificates
 
 ENV PYPY_VERSION 5.9.0
-ENV PYPY_SHA256SUM a667f8aad914e82e35fd8a505490fe424ec8defeec7c23cf09c047b8fa3097f3
+ENV PYPY_SHA256SUM a85abaaa01f8db9210e7526ed36350c3269d008b7626c1202efd86b3c426f1ef
 
 # if this is called "PIP_VERSION", pip explodes with "ValueError: invalid truth value '<VERSION>'"
 ENV PYTHON_PIP_VERSION 9.0.1
@@ -25,22 +25,26 @@ RUN set -ex; \
         xz \
     ; \
     \
-    wget -O pypy.tar.bz2 "https://github.com/JayH5/alpine-pypy/releases/download/2-$PYPY_VERSION/pypy2-v${PYPY_VERSION}-linux64.tar.bz2"; \
+    wget -O pypy.tar.bz2 "https://github.com/JayH5/alpine-pypy/releases/download/3-$PYPY_VERSION/pypy3-v${PYPY_VERSION}-linux64.tar.bz2"; \
     echo "$PYPY_SHA256SUM *pypy.tar.bz2" | sha256sum -c -; \
     tar -xjC /usr/local --strip-components=1 -f pypy.tar.bz2; \
     rm pypy.tar.bz2; \
     \
     runDeps="$( \
-        scanelf --needed --nobanner --recursive /usr/local \
-            | awk '{ gsub(/,/, "\nso:", $2); print "so:" $2 }' \
-            | sort -u \
-            | grep -v 'libpypy-c' \
-    )"; \
+          scanelf --needed --nobanner --format '%n#p' --recursive /usr/local \
+              | tr ',' '\n' \
+              | sort -u \
+              | while read sofile; do \
+                  if [ ! -e "/usr/local/lib/$sofile" ] && [ ! -e "/usr/local/bin/$sofile" ]; then \
+                      echo "so:$sofile"; \
+                  fi \
+              done \
+      )"; \
     apk add --no-cache --virtual .pypy-rundeps $runDeps; \
     \
     wget -O get-pip.py 'https://bootstrap.pypa.io/get-pip.py'; \
     \
-    pypy get-pip.py \
+    pypy3 get-pip.py \
         --disable-pip-version-check \
         --no-cache-dir \
         "pip==$PYTHON_PIP_VERSION" \
@@ -51,4 +55,4 @@ RUN set -ex; \
     \
     apk del .fetch-deps
 
-CMD ["pypy"]
+CMD ["pypy3"]
