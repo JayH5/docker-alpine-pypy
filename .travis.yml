@@ -37,6 +37,7 @@ script:
 
 after_script:
   - docker images
+  - pip install docker-ci-deploy==0.3.0 && dcd --dry-run --version "$version" --version-semver ${TAG_LATEST:+--version-latest} "$image"
 
 before_deploy:
   - pip install docker-ci-deploy==0.3.0
