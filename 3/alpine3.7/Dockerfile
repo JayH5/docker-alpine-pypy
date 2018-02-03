@@ -1,4 +1,4 @@
-FROM alpine:3.6
+FROM alpine:3.7
 LABEL maintainer "Jamie Hewland <jhewland@gmail.com>"
 
 # ensure local pypy is preferred over distribution python
@@ -12,8 +12,8 @@ ENV LANG C.UTF-8
 # the other runtime dependencies for PyPy are installed later
 RUN apk add --no-cache ca-certificates
 
-ENV PYPY_VERSION 5.9.0
-ENV PYPY_SHA256SUM a85abaaa01f8db9210e7526ed36350c3269d008b7626c1202efd86b3c426f1ef
+ENV PYPY_VERSION 5.10.1
+ENV PYPY_SHA256SUM 89e41c1db03df82d8a8bb75c8bddf0c22209fc73e9f602e821955048c629540e
 
 # if this is called "PIP_VERSION", pip explodes with "ValueError: invalid truth value '<VERSION>'"
 ENV PYTHON_PIP_VERSION 9.0.1
@@ -25,7 +25,9 @@ RUN set -ex; \
         xz \
     ; \
     \
-    wget -O pypy.tar.bz2 "https://github.com/JayH5/alpine-pypy/releases/download/3-$PYPY_VERSION/pypy3-v${PYPY_VERSION}-linux64.tar.bz2"; \
+    filename="pypy3-v${PYPY_VERSION}-linux64-alpine$(cut -d '.' -f 1,2 /etc/alpine-release).tar.bz2"; \
+    wget -O pypy.tar.bz2 "https://github.com/JayH5/alpine-pypy/releases/download/3-$PYPY_VERSION/$filename"; \
+    \
     echo "$PYPY_SHA256SUM *pypy.tar.bz2" | sha256sum -c -; \
     tar -xjC /usr/local --strip-components=1 -f pypy.tar.bz2; \
     rm pypy.tar.bz2; \
