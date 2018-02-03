@@ -33,10 +33,14 @@ RUN set -ex; \
     rm pypy.tar.bz2; \
     \
     runDeps="$( \
-        scanelf --needed --nobanner --recursive /usr/local \
-            | awk '{ gsub(/,/, "\nso:", $2); print "so:" $2 }' \
+        scanelf --needed --nobanner --format '%n#p' --recursive /usr/local \
+            | tr ',' '\n' \
             | sort -u \
-            | grep -v 'libpypy-c' \
+            | while read sofile; do \
+                if [ ! -e "/usr/local/lib/$sofile" ] && [ ! -e "/usr/local/bin/$sofile" ]; then \
+                    echo "so:$sofile"; \
+                fi \
+            done \
     )"; \
     apk add --no-cache --virtual .pypy-rundeps $runDeps; \
     \
