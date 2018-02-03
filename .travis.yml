@@ -21,7 +21,7 @@ install:
 
 before_script:
   - cd "$VERSION"
-  - image="$IMAGE_NAME:${VERSION%/*}-${VERSION#*/}"
+  - image="$IMAGE_NAME:${VERSION%/*}"
   - version="${VERSION%/*}-$(awk '$2 == "PYPY_VERSION" { print $3; exit }' Dockerfile)"
   - echo "Building image $image with PyPy version $version"
   - docker pull "$image" || true
@@ -37,13 +37,13 @@ script:
 
 after_script:
   - docker images
-  - pip install docker-ci-deploy==0.3.0 && dcd --dry-run --version "$version" --version-semver ${TAG_LATEST:+--version-latest} "$image"
+  - pip install docker-ci-deploy==0.3.0 && dcd --dry-run -t latest "${VERSION#*/}" -V "$version" -S ${TAG_LATEST:+-L} "$image"
 
 before_deploy:
   - pip install docker-ci-deploy==0.3.0
   - docker login -u "$REGISTRY_USER" -p "$REGISTRY_PASS"
 deploy:
   provider: script
-  script: dcd --version "$version" --version-semver ${TAG_LATEST:+--version-latest} "$image"
+  script: dcd -t latest "${VERSION#*/}" -V "$version" -S ${TAG_LATEST:+-L} "$image"
   on:
     branch: master
