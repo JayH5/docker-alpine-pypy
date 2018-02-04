@@ -13,7 +13,7 @@ ENV LANG C.UTF-8
 RUN apk add --no-cache ca-certificates
 
 ENV PYPY_VERSION 5.10.1
-ENV PYPY_SHA256SUM 89e41c1db03df82d8a8bb75c8bddf0c22209fc73e9f602e821955048c629540e
+ENV PYPY_SHA256SUM 8d6d04f5df9c6afb577368e4b06726a62361a6d88c1f55abb5e9ab168ad0c282
 
 # if this is called "PIP_VERSION", pip explodes with "ValueError: invalid truth value '<VERSION>'"
 ENV PYTHON_PIP_VERSION 9.0.1
