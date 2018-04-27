@@ -16,7 +16,7 @@ ENV PYPY_VERSION 5.10.0
 ENV PYPY_SHA256SUM 3c23060bd45e48ddf87f7f1eaa31485d9b358c1d7e1fa025977e05addf4ce086
 
 # if this is called "PIP_VERSION", pip explodes with "ValueError: invalid truth value '<VERSION>'"
-ENV PYTHON_PIP_VERSION 9.0.1
+ENV PYTHON_PIP_VERSION 10.0.1
 
 RUN set -ex; \
     apk add --no-cache --virtual .fetch-deps \
