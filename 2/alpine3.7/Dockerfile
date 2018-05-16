@@ -30,6 +30,7 @@ RUN set -ex; \
     \
     echo "$PYPY_SHA256SUM *pypy.tar.bz2" | sha256sum -c -; \
     tar -xjC /usr/local --strip-components=1 -f pypy.tar.bz2; \
+    find /usr/local/lib-python -depth -type d -a \( -name test -o -name tests \) -exec rm -rf '{}' +; \
     rm pypy.tar.bz2; \
     \
     runDeps="$( \
