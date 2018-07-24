@@ -26,17 +26,13 @@ RUN set -ex; \
     rm pypy.tar.bz2; \
     apk del .fetch-deps; \
     \
-    runDeps="$( \
-        scanelf --needed --nobanner --format '%n#p' --recursive /usr/local \
-            | tr ',' '\n' \
-            | sort -u \
-            | while read sofile; do \
-                if [ ! -e "/usr/local/lib/$sofile" ] && [ ! -e "/usr/local/bin/$sofile" ]; then \
-                    echo "so:$sofile"; \
-                fi \
-            done \
-    )"; \
-    apk add --no-cache --virtual .pypy-rundeps $runDeps; \
+    apk add --no-cache findutils; \
+    find /usr/local -type f -executable -not \( -path '*tkinter*' \) -exec scanelf --needed --nobanner --format '%n#p' '{}' ';' \
+        | tr ',' '\n' \
+        | sort -u \
+        | awk 'system("[ -e /usr/local/lib/" $1 " ] || [ -e /usr/local/bin/" $1 " ]") == 0 { next } { print "so:" $1 }' \
+        | xargs -rt apk add --virtual .pypy-rundeps; \
+    apk del findutils; \
     \
     pypy --version
 
