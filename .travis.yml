@@ -31,7 +31,7 @@ script:
   # Run the "official-images" tests, but first tag our image like the official
   # ones to get the same tests
   - |
-    official_image="pypy:$VERSION${VARIANT:+-$VARIANT}"
+    official_image="pypy:${VERSION%/*}"
     docker tag "$image" "$official_image"
     ~/official-images/test/run.sh "$official_image"
 
