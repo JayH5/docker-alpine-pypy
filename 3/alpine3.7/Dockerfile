@@ -8,19 +8,11 @@ ENV PATH /usr/local/bin:$PATH
 # > At the moment, setting "LANG=C" on a Linux system *fundamentally breaks Python 3*, and that's not OK.
 ENV LANG C.UTF-8
 
-# install ca-certificates so that HTTPS works consistently
-# the other runtime dependencies for PyPy are installed later
-RUN apk add --no-cache ca-certificates
-
 ENV PYPY_VERSION 6.0.0
 ENV PYPY_SHA256SUM d20aa65d203dcaf5a6934431800d5e3739273702f8f24f8f900d656b0bb8a011
 
-# if this is called "PIP_VERSION", pip explodes with "ValueError: invalid truth value '<VERSION>'"
-ENV PYTHON_PIP_VERSION 10.0.1
-
 RUN set -ex; \
     apk add --no-cache --virtual .fetch-deps \
-        libressl \
         tar \
         xz \
     ; \
@@ -32,18 +24,22 @@ RUN set -ex; \
     tar -xjC /usr/local --strip-components=1 -f pypy.tar.bz2; \
     find /usr/local/lib-python -depth -type d -a \( -name test -o -name tests \) -exec rm -rf '{}' +; \
     rm pypy.tar.bz2; \
+    apk del .fetch-deps; \
     \
-    runDeps="$( \
-          scanelf --needed --nobanner --format '%n#p' --recursive /usr/local \
-              | tr ',' '\n' \
-              | sort -u \
-              | while read sofile; do \
-                  if [ ! -e "/usr/local/lib/$sofile" ] && [ ! -e "/usr/local/bin/$sofile" ]; then \
-                      echo "so:$sofile"; \
-                  fi \
-              done \
-      )"; \
-    apk add --no-cache --virtual .pypy-rundeps $runDeps; \
+    apk add --no-cache findutils; \
+    find /usr/local -type f -executable -not \( -path '*tkinter*' \) -exec scanelf --needed --nobanner --format '%n#p' '{}' ';' \
+        | tr ',' '\n' \
+        | sort -u \
+        | awk 'system("[ -e /usr/local/lib/" $1 " ] || [ -e /usr/local/bin/" $1 " ]") == 0 { next } { print "so:" $1 }' \
+        | xargs -rt apk add --virtual .pypy-rundeps; \
+    apk del findutils; \
+    \
+    pypy3 --version
+
+# if this is called "PIP_VERSION", pip explodes with "ValueError: invalid truth value '<VERSION>'"
+ENV PYTHON_PIP_VERSION 18.0
+
+RUN set -ex; \
     \
     wget -O get-pip.py 'https://bootstrap.pypa.io/get-pip.py'; \
     \
@@ -54,8 +50,6 @@ RUN set -ex; \
     ; \
     pip --version; \
     \
-    rm -f get-pip.py; \
-    \
-    apk del .fetch-deps
+    rm -f get-pip.py
 
 CMD ["pypy3"]
