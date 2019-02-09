@@ -37,7 +37,7 @@ RUN set -ex; \
     pypy3 --version
 
 # if this is called "PIP_VERSION", pip explodes with "ValueError: invalid truth value '<VERSION>'"
-ENV PYTHON_PIP_VERSION 18.0
+ENV PYTHON_PIP_VERSION 19.0.2
 
 RUN set -ex; \
     \
