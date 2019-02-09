@@ -1,4 +1,4 @@
-FROM alpine:3.7
+FROM alpine:3.9
 LABEL maintainer "Jamie Hewland <jhewland@gmail.com>"
 
 # ensure local pypy is preferred over distribution python
@@ -8,8 +8,8 @@ ENV PATH /usr/local/bin:$PATH
 # > At the moment, setting "LANG=C" on a Linux system *fundamentally breaks Python 3*, and that's not OK.
 ENV LANG C.UTF-8
 
-ENV PYPY_VERSION 6.0.0
-ENV PYPY_SHA256SUM cfbfb8990c9123a36c0698b0eedba3d32462f13c292faad6eba3c3e763bc8f68
+ENV PYPY_VERSION 7.0.0
+ENV PYPY_SHA256SUM 0dadce83d6ca1ef4019a5a73fb1e0a00458d7604bf7a2834b95424cdf546ec78
 
 RUN set -ex; \
     apk add --no-cache --virtual .fetch-deps \
@@ -17,8 +17,8 @@ RUN set -ex; \
         xz \
     ; \
     \
-    filename="pypy2-v${PYPY_VERSION}-linux64-alpine$(cut -d '.' -f 1,2 /etc/alpine-release).tar.bz2"; \
-    wget -O pypy.tar.bz2 "https://github.com/JayH5/alpine-pypy/releases/download/2-$PYPY_VERSION/$filename"; \
+    filename="pypy2.7-v${PYPY_VERSION}-linux64-alpine$(cut -d '.' -f 1,2 /etc/alpine-release).tar.bz2"; \
+    wget -O pypy.tar.bz2 "https://github.com/JayH5/alpine-pypy/releases/download/2.7-$PYPY_VERSION/$filename"; \
     \
     echo "$PYPY_SHA256SUM *pypy.tar.bz2" | sha256sum -c -; \
     tar -xjC /usr/local --strip-components=1 -f pypy.tar.bz2; \
