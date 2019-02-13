@@ -8,9 +8,9 @@ env:
     - REGISTRY_USER=jamiehewland
     - secure: "4qDsmFNSiMYOmAsDugOEsTxOJIszKtMUqiymNWsWyNq1MYDRsRzILtfAAxHo1V6Bva2JfCKwQu6PRu53kW6SvgIZhtcVD33qx/fhGGXa4izZO3E2znSLJ2x15iO8Py/4OHkMWEG+y/HLh4sDWhEQEM25mGrcYywc0iBIWnmezQ2yOH2ow3MlMTQ+Eu3vDWmD4CyDJU/fmAx9rU38xzYK1mksiSgjPC0xsM3ZLsbIiEXXhTZzgwJvrBfVaEMosO2ZI3dYeVEe0v0eaMPT9Sh2prQqsNUJrIWQQpzLQB4g/ORUddj96LbJ0lplsJgJ9f86xN0F4wEoc0aEea8tSMjXEnxatQi4nwXRXm0HbC2K4/rMqqTbn5PBi3pMtS4k02lxvysJyaaaMc0cjE4ZiQsSPlYEmxet1gaJbM+PGDCvvTfuPaDTwbWWZLslHkxdriAZhI5pKl2++hjm1/HP88cY1YWOIBW7fW+wawyApATfznPKVzdoyLapHc+hLsVVU/rB8QHTWMEjpLAGVjZpHwYYyidZngbIAnzRxBt0LyJJnHSO5jGgIrtkgJbtwdCgNVaAGCcZ9a+bwQWNuSxPC2d4tLufpqbMEXMujKG3YPyrQ6/80MRqdKa1TBZwwnsOWfjSwZe+7i9wxBz1gR6KegLMOCuMAslcCxA+BoaezH2cbPY="
   matrix:
-    - VERSION=2.7/alpine3.9 TAG_LATEST=
-    - VERSION=3.5/alpine3.9 TAG_LATEST=
-    - VERSION=3.6/alpine3.9 TAG_LATEST=1
+    - VERSION=2.7/alpine3.9 TAG_LATEST=  SEMVER_PRECISION=1
+    - VERSION=3.5/alpine3.9 TAG_LATEST=1 SEMVER_PRECISION=1
+    - VERSION=3.6/alpine3.9 TAG_LATEST=  SEMVER_PRECISION=2
 
 install:
   - git clone https://github.com/docker-library/official-images.git ~/official-images
@@ -39,6 +39,6 @@ before_deploy:
   - echo "$REGISTRY_PASS" | docker login -u "$REGISTRY_USER" --password-stdin
 deploy:
   provider: script
-  script: dcd -t latest "${VERSION#*/}" -V "$version" -S ${TAG_LATEST:+-L} "$image"
+  script: dcd -t latest "${VERSION#*/}" -V "$version" -S -P $SEMVER_PRECISION ${TAG_LATEST:+-L} "$image"
   on:
     branch: master
