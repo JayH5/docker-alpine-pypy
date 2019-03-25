@@ -8,8 +8,8 @@ ENV PATH /usr/local/bin:$PATH
 # > At the moment, setting "LANG=C" on a Linux system *fundamentally breaks Python 3*, and that's not OK.
 ENV LANG C.UTF-8
 
-ENV PYPY_VERSION 7.0.0
-ENV PYPY_SHA256SUM e3529fdc3b04281d003568c68f22fda04f64418034c3f4b41381aaee3ea4f5ea
+ENV PYPY_VERSION 7.1.0
+ENV PYPY_SHA256SUM a59a3479b7361ebe7184f841d4b6238a05dcdf8032ce0d41e758ee230a900608
 
 RUN set -ex; \
     apk add --no-cache --virtual .fetch-deps \
@@ -37,7 +37,7 @@ RUN set -ex; \
     pypy3 --version
 
 # if this is called "PIP_VERSION", pip explodes with "ValueError: invalid truth value '<VERSION>'"
-ENV PYTHON_PIP_VERSION 19.0.2
+ENV PYTHON_PIP_VERSION 19.0.3
 
 RUN set -ex; \
     \
