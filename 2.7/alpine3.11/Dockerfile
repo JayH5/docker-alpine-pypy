@@ -1,4 +1,4 @@
-FROM alpine:3.9
+FROM alpine:3.11
 LABEL maintainer "Jamie Hewland <jhewland@gmail.com>"
 
 # ensure local pypy is preferred over distribution python
@@ -8,8 +8,8 @@ ENV PATH /usr/local/bin:$PATH
 # > At the moment, setting "LANG=C" on a Linux system *fundamentally breaks Python 3*, and that's not OK.
 ENV LANG C.UTF-8
 
-ENV PYPY_VERSION 7.0.0
-ENV PYPY_SHA256SUM 503e17bb2f1e50c70aae4f8e8485f0c5fcb8e9e33e2c2d561bbebb92027b46f5
+ENV PYPY_VERSION 7.3.0
+ENV PYPY_SHA256SUM 4b25ce0178aa6c206d262bf6cb65b06ce4d36a57ed2f55418e01b18ab66d6f61
 
 RUN set -ex; \
     apk add --no-cache --virtual .fetch-deps \
@@ -17,8 +17,8 @@ RUN set -ex; \
         xz \
     ; \
     \
-    filename="pypy3.5-v${PYPY_VERSION}-linux64-alpine$(cut -d '.' -f 1,2 /etc/alpine-release).tar.bz2"; \
-    wget -O pypy.tar.bz2 "https://github.com/JayH5/alpine-pypy/releases/download/3.5-$PYPY_VERSION/$filename"; \
+    filename="pypy2.7-v${PYPY_VERSION}-linux64-alpine$(cut -d '.' -f 1,2 /etc/alpine-release).tar.bz2"; \
+    wget -O pypy.tar.bz2 "https://github.com/JayH5/alpine-pypy/releases/download/2.7-$PYPY_VERSION/$filename"; \
     \
     echo "$PYPY_SHA256SUM *pypy.tar.bz2" | sha256sum -c -; \
     tar -xjC /usr/local --strip-components=1 -f pypy.tar.bz2; \
@@ -34,16 +34,16 @@ RUN set -ex; \
         | xargs -rt apk add --virtual .pypy-rundeps; \
     apk del findutils; \
     \
-    pypy3 --version
+    pypy --version
 
 # if this is called "PIP_VERSION", pip explodes with "ValueError: invalid truth value '<VERSION>'"
-ENV PYTHON_PIP_VERSION 19.0.3
+ENV PYTHON_PIP_VERSION 19.3.1
 
 RUN set -ex; \
     \
     wget -O get-pip.py 'https://bootstrap.pypa.io/get-pip.py'; \
     \
-    pypy3 get-pip.py \
+    pypy get-pip.py \
         --disable-pip-version-check \
         --no-cache-dir \
         "pip==$PYTHON_PIP_VERSION" \
@@ -52,4 +52,4 @@ RUN set -ex; \
     \
     rm -f get-pip.py
 
-CMD ["pypy3"]
+CMD ["pypy"]
