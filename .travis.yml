@@ -6,7 +6,7 @@ env:
   global:
     - IMAGE_NAME=jamiehewland/alpine-pypy
     - REGISTRY_USER=jamiehewland
-    - secure: "4qDsmFNSiMYOmAsDugOEsTxOJIszKtMUqiymNWsWyNq1MYDRsRzILtfAAxHo1V6Bva2JfCKwQu6PRu53kW6SvgIZhtcVD33qx/fhGGXa4izZO3E2znSLJ2x15iO8Py/4OHkMWEG+y/HLh4sDWhEQEM25mGrcYywc0iBIWnmezQ2yOH2ow3MlMTQ+Eu3vDWmD4CyDJU/fmAx9rU38xzYK1mksiSgjPC0xsM3ZLsbIiEXXhTZzgwJvrBfVaEMosO2ZI3dYeVEe0v0eaMPT9Sh2prQqsNUJrIWQQpzLQB4g/ORUddj96LbJ0lplsJgJ9f86xN0F4wEoc0aEea8tSMjXEnxatQi4nwXRXm0HbC2K4/rMqqTbn5PBi3pMtS4k02lxvysJyaaaMc0cjE4ZiQsSPlYEmxet1gaJbM+PGDCvvTfuPaDTwbWWZLslHkxdriAZhI5pKl2++hjm1/HP88cY1YWOIBW7fW+wawyApATfznPKVzdoyLapHc+hLsVVU/rB8QHTWMEjpLAGVjZpHwYYyidZngbIAnzRxBt0LyJJnHSO5jGgIrtkgJbtwdCgNVaAGCcZ9a+bwQWNuSxPC2d4tLufpqbMEXMujKG3YPyrQ6/80MRqdKa1TBZwwnsOWfjSwZe+7i9wxBz1gR6KegLMOCuMAslcCxA+BoaezH2cbPY="
+    - secure: "jCF9Z8/Q2Jft6ngq8MEQREZhGT/JI3daj763N+aZn67ZxLIBsht4hOZJikOMVWCT3OGopAVXkMkQkqLIOm1/vaaa498QLmeAz5BMsiedg5JcKN+mpRlWcoyrlqnuS0bcbcssXEYSu8jYCpd1fT7iDsWbnLazDVpBT8NrPuXWpVsGHs77mpNR5Di2NsnBHwakC5VqDrwx3n7R7shNyfqJ9eJoXr1Lqs7wM02/GbKfGC+KlPpQ/HnLruWvv5mX25vs/j2tPp+TbzBTtMpALysw54PJo+ZP2yonRfPfMvD1KCme3pA3SpGf4yWHLr/JVGTPrpbrMN5dmTYYFRolt6i9BJpfucLLKXu/17XLeVLVvbVptbug7Iux1r1gi6IaFSPiZOpYoltBsuoQeeLed+cd4g9d+M1w0rhTVMNholf2oFb3BLpnNVXRjJck6nw6b06U1m/u2hZ0UjHi2K5OPaJtwAi8pUURArs95bmHJMezzwOu01HQpfBVycFGDMbXVlt6CvaCHOnSi3JCUESl/GxdUmLrIexgFdPUfn104mjbvo5pvpCkKs4C+1qedwXuZoU+fnZfkV6rdfDyHGGhNeJQsh5WlkT0/IBjsYngmGsBnVvxsw5HU4iGomzAOHGHRiaNitBDaU6cHvresEnwu88sDzU9F2tq/yMdEyTIfSyM60g="
   matrix:
     - VERSION=2.7/alpine3.11 TAG_LATEST=
     - VERSION=3.6/alpine3.11 TAG_LATEST=1
@@ -35,7 +35,7 @@ after_script:
 
 before_deploy:
   - pip install docker-ci-deploy==0.3.0
-  - echo "$REGISTRY_PASS" | docker login -u "$REGISTRY_USER" --password-stdin
+  - echo -n "$REGISTRY_PASS" | docker login -u "$REGISTRY_USER" --password-stdin
 deploy:
   provider: script
   script: dcd -t latest "${VERSION#*/}" -V "$version" -S ${TAG_LATEST:+-L} "$image"
