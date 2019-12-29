@@ -1,4 +1,4 @@
-dist: xenial
+dist: buster
 language: python
 services: docker
 
