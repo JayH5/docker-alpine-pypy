@@ -1,4 +1,4 @@
-FROM alpine:3.9
+FROM alpine:3.11
 LABEL maintainer "Jamie Hewland <jhewland@gmail.com>"
 
 # ensure local pypy is preferred over distribution python
@@ -8,8 +8,8 @@ ENV PATH /usr/local/bin:$PATH
 # > At the moment, setting "LANG=C" on a Linux system *fundamentally breaks Python 3*, and that's not OK.
 ENV LANG C.UTF-8
 
-ENV PYPY_VERSION 7.1.0
-ENV PYPY_SHA256SUM a59a3479b7361ebe7184f841d4b6238a05dcdf8032ce0d41e758ee230a900608
+ENV PYPY_VERSION 7.3.0
+ENV PYPY_SHA256SUM c1074569de1fcf89488689cecc5953cac7e00e5e6f3d96940dd3bae15827dcd9
 
 RUN set -ex; \
     apk add --no-cache --virtual .fetch-deps \
