@@ -8,8 +8,8 @@ ENV PATH /usr/local/bin:$PATH
 # > At the moment, setting "LANG=C" on a Linux system *fundamentally breaks Python 3*, and that's not OK.
 ENV LANG C.UTF-8
 
-ENV PYPY_VERSION 7.3.0
-ENV PYPY_SHA256SUM 4b25ce0178aa6c206d262bf6cb65b06ce4d36a57ed2f55418e01b18ab66d6f61
+ENV PYPY_VERSION 7.3.1
+ENV PYPY_SHA256SUM 3af22471c9b607a27db4c112064cddda78c3e2751dd6db7f8fbae75628d5ad90
 
 RUN set -ex; \
     apk add --no-cache --virtual .fetch-deps \
